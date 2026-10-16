@@ -1,0 +1,9 @@
+<?xml version='1.0' encoding='utf-8'?>
+<resources>
+    <string name="bus_app_name">Bus Schedule</string>
+    <string name="bus_full_schedule">Bus Schedule</string>
+    <string name="bus_back">Back</string>
+    <string name="bus_stop_name">Stop Name</string>
+    <string name="bus_route_stop_name">Stop</string>
+    <string name="bus_arrival_time">Arrival Time</string>
+</resources>
