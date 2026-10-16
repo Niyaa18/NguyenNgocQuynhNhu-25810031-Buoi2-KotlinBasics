@@ -1,0 +1,19 @@
+<?xml version='1.0' encoding='utf-8'?>
+<resources>
+    <string name="lunch_app_name">Lunch Tray</string>
+    <string name="lunch_back_button">Back</string>
+    <string name="lunch_cancel">Cancel</string>
+    <string name="lunch_choose_accompaniment">Choose Accompaniment</string>
+    <string name="lunch_choose_entree">Choose Entree</string>
+    <string name="lunch_choose_side_dish">Choose Side Dish</string>
+    <string name="lunch_next">Next</string>
+    <string name="lunch_order_checkout">Order Checkout</string>
+    <string name="lunch_start_order">Start Order</string>
+    <string name="lunch_order_summary">Order Summary</string>
+    <string name="lunch_subtotal">Subtotal: %s</string>
+    <string name="lunch_tax">Tax: %s</string>
+    <string name="lunch_total">Total: %s</string>
+    <string name="lunch_submit">Submit</string>
+    <string name="lunch_student_name">Nguyen Ngoc Quynh Nhu</string>
+    <string name="lunch_student_id">MSSV: 25810031</string>
+</resources>

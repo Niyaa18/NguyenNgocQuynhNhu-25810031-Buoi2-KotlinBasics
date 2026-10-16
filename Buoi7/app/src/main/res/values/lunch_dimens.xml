@@ -1,0 +1,6 @@
+<?xml version='1.0' encoding='utf-8'?>
+<resources>
+    <dimen name="lunch_padding_medium">16dp</dimen>
+    <dimen name="lunch_padding_small">8dp</dimen>
+    <dimen name="lunch_thickness_divider">1dp</dimen>
+</resources>
