@@ -1,0 +1,207 @@
+BÀI THỰC HÀNH D8 — STAGES OF THE ACTIVITY LIFECYCLE
+Android Basics with Compose — Unit 4, Pathway 1
+Họ tên: Nguyen Ngoc Quynh Nhu
+MSSV: 25810031
+
+1. PHẠM VI BÀI NỘP
+Ảnh yêu cầu hoàn thành một codelab: Stages of the Activity lifecycle.
+Ứng dụng của codelab là Dessert Clicker. Bộ này gồm một project hoàn chỉnh,
+hình ảnh/tài nguyên và hướng dẫn thực hành. Không gộp các bài khác trong
+Unit 4 hoặc các màn hình demo mở rộng của D8 vào ứng dụng bài nộp.
+
+Đã đối chiếu Sample/LifeCycleDemo trong D8: phần Demo1 minh họa callback,
+phần Demo2 so sánh remember, rememberSaveable và Bundle. Bộ bài vận dụng
+các nội dung này vào Dessert Clicker đúng ứng dụng được codelab chỉ định.
+Mã nền Dessert Clicker lấy từ lời giải chính thức Android Developers,
+giữ giấy phép và ghi rõ phần điều chỉnh ở cuối tài liệu.
+
+2. CÁCH MỞ VÀ CHẠY — KHÔNG CẦN TỰ CHÉP CODE
+- Giải nén toàn bộ ZIP.
+- Android Studio > Open > chọn thư mục Buoi8_GitHub chứa settings.gradle.kts.
+- Đợi Gradle Sync; lần đầu cần Internet để tải Gradle và thư viện.
+- Đặt Gradle JDK = 17. Cài Android SDK Platform 35 và Build Tools khi IDE yêu cầu.
+- Tạo máy ảo hoặc kết nối điện thoại Android API 24 trở lên.
+- Chọn cấu hình app, chọn thiết bị rồi nhấn Run.
+- Nhấn ảnh bánh để tăng số lượng bán và doanh thu.
+
+Cấu hình: AGP 8.8.0, Kotlin 2.1.0, Gradle 8.12, Compose BOM 2024.12.01,
+compileSdk/targetSdk 35, minSdk 24. Giữ các phiên bản đồng bộ trong project.
+Không kèm local.properties vì Android SDK có đường dẫn riêng trên từng máy.
+Nếu IDE báo SDK location not found, chọn lại Android SDK trong Settings.
+
+Tạo APK debug trên Windows (trong thư mục Buoi8_GitHub):
+  gradlew.bat assembleDebug
+Sau khi build thành công, APK nằm ở app/build/outputs/apk/debug/app-debug.apk.
+
+3. CẤU TRÚC MÃ NGUỒN
+Các file chính dưới app/src/main/java/com/example/dessertclicker:
+- MainActivity.kt: callback vòng đời, ghi log, lưu trạng thái và giao diện.
+- data/Datasource.kt: danh sách bánh, giá và ngưỡng chuyển sang bánh tiếp theo.
+- model/Dessert.kt: model dữ liệu bánh.
+- ui/theme/: màu sắc và kiểu chữ.
+res/drawable/: ảnh bánh và nền tiệm bánh.
+res/values/strings.xml: chuỗi giao diện, họ tên và MSSV.
+
+4. HOẠT ĐỘNG CỦA DESSERT CLICKER
+Khi nhấn ảnh bánh:
+a) Cộng giá hiện tại vào revenue.
+b) Tăng dessertsSold lên 1.
+c) determineDessertToShow() tìm bánh phù hợp với số lượng đã bán.
+d) Cập nhật ảnh và giá dùng cho lần nhấn tiếp theo.
+
+Ví dụ tính toán theo dữ liệu mẫu, không phải kết quả chạy đã ghi nhận:
+- Ban đầu: 0 bánh, doanh thu $0, giá cupcake $5.
+- Nhấn 4 lần: 4 bánh, $20.
+- Nhấn lần thứ 5: 5 bánh, $25; ảnh chuyển sang donut giá $10.
+- Nhấn lần thứ 6: 6 bánh, $35.
+Giá bánh mới áp dụng cho lần bán tiếp theo, không tính lại các bánh đã bán.
+Nút Share mở bảng chọn ứng dụng chia sẻ thông tin; không tự gửi tin nhắn.
+
+5. BẢY CALLBACK VÒNG ĐỜI
+Mỗi hàm override gọi hàm super tương ứng và ghi Log.d với TAG MainActivity.
+
+onCreate(): khởi tạo một phiên bản Activity; thiết lập giao diện bằng setContent.
+onStart(): Activity chuyển sang trạng thái hiển thị.
+onResume(): Activity ở trạng thái Resumed, có thể tương tác với người dùng.
+onPause(): Activity rời trạng thái Resumed; có thể vẫn nhìn thấy một phần.
+onStop(): Activity không còn hiển thị.
+onRestart(): Activity đã Stop chuẩn bị Start trở lại, nếu vẫn dùng phiên bản cũ.
+onDestroy(): phiên bản Activity được hủy, chẳng hạn do tái tạo khi xoay màn hình.
+
+Mẫu trong mã nguồn:
+  override fun onStop() {
+      super.onStop()
+      Log.d(TAG, "onStop Called")
+  }
+
+onCreate() không chạy lại chỉ vì Compose vẽ lại giao diện. Recomposition và
+việc tạo lại Activity là hai cơ chế khác nhau.
+onDestroy() không được bảo đảm sẽ gọi khi hệ thống kết thúc cả tiến trình;
+không dùng nó như nơi duy nhất để lưu dữ liệu quan trọng.
+
+6. REMEMBER VÀ REMEMBERSAVEABLE
+remember giữ giá trị qua recomposition, nhưng không giữ giá trị khi Activity
+bị hủy và tạo lại do thay đổi cấu hình.
+rememberSaveable kết hợp với cơ chế saved instance state để khôi phục dữ liệu
+có thể lưu được khi Activity được tạo lại, điển hình là xoay màn hình.
+
+Bản lời giải dùng rememberSaveable cho năm giá trị:
+- revenue: doanh thu.
+- dessertsSold: số bánh đã bán.
+- currentDessertIndex: chỉ số khởi tạo trong mã mẫu (ban đầu bằng 0).
+- currentDessertPrice: giá bánh hiện tại.
+- currentDessertImageId: tài nguyên ảnh bánh hiện tại.
+Lưu ý: chỉ số khởi tạo trong mã mẫu không tăng sau mỗi lần bán. Hàm
+ determineDessertToShow() chọn bánh từ dessertsSold rồi cập nhật trực tiếp
+ảnh và giá. Vì vậy chỉ số này không phải bộ đếm số loại bánh đã bán.
+
+Ví dụ:
+  var revenue by rememberSaveable { mutableStateOf(0) }
+
+rememberSaveable không phải cơ sở dữ liệu lưu doanh thu vĩnh viễn. Không
+kỳ vọng dữ liệu được giữ khi xóa dữ liệu app, gỡ app, chủ động kết thúc task
+hoặc bắt đầu một phiên hoàn toàn mới. Với process death do hệ thống, việc
+khôi phục phụ thuộc saved state và task còn được hệ thống phục hồi.
+
+7. THỰC HÀNH QUAN SÁT LOGCAT
+Mở View > Tool Windows > Logcat (hoặc tab Logcat ở dưới IDE).
+Chọn đúng thiết bị và tiến trình ứng dụng. Nhập bộ lọc:
+  package:edu.hcmute.quynhnhu.s25810031.dessertclicker tag:MainActivity
+Có thể dùng riêng tag:MainActivity nếu đã chọn đúng tiến trình.
+Mức log phải bao gồm DEBUG. Xóa log cũ trước mỗi tình huống để dễ so sánh.
+
+Các chuỗi sau là DỰ KIẾN cho tình huống thông thường, không phải log thật
+được thu từ bản bài này. Thiết bị, đa cửa sổ và trạng thái tiến trình có thể
+làm kết quả quan sát khác nhau; luôn ghi lại log thực tế.
+
+A. KHỞI ĐỘNG MỚI
+Mở app từ một phiên đã kết thúc:
+  onCreate -> onStart -> onResume.
+Kiểm tra tên/MSSV trên thanh tiêu đề và giá trị ban đầu.
+
+B. NHẤN HOME
+Bán vài bánh rồi nhấn Home:
+  onPause -> onStop.
+App vào nền. Home thông thường không hủy Activity ngay.
+
+C. QUAY LẠI TỪ RECENTS
+Nếu Activity chưa bị hủy:
+  onRestart -> onStart -> onResume.
+Số lượng và doanh thu còn như trước. Nếu hệ thống đã hủy tiến trình,
+quá trình trở lại có thể đi qua onCreate thay vì onRestart.
+
+D. XOAY DỌC SANG NGANG
+Bán 6 bánh, ghi lại 6 và $35. Xoay thiết bị (bật Auto-rotate nếu cần).
+Chuỗi thường gặp khi Activity đang Resumed và bị tạo lại:
+  onPause -> onStop -> onDestroy -> onCreate -> onStart -> onResume.
+Kỳ vọng số bánh vẫn là 6, doanh thu $35 và ảnh vẫn là donut.
+Nhấn thêm một lần: dự kiến 7 bánh, $45.
+Project không khai báo configChanges để né việc tái tạo khi xoay màn hình.
+
+E. MỞ GIAO DIỆN CHIA SẺ RỒI ĐÓNG
+Nhấn Share, quan sát log; sau đó Back để đóng bảng chọn.
+Có thể thấy onPause rồi onResume. Nếu giao diện khác che toàn màn hình,
+có thể có cả onStop/onRestart. Không bắt buộc một chuỗi duy nhất cho mọi
+phiên bản share sheet. Không cần gửi thông tin cho ai để làm bài.
+
+F. NHẤN BACK TỪ MÀN HÌNH CHÍNH
+Android 11 trở xuống: mặc định có thể kết thúc root launcher Activity.
+Android 12 trở lên: mặc định Back ở root launcher Activity đưa task ra nền,
+tương tự Home; không bắt buộc có onDestroy.
+Vì vậy không kết luận code sai chỉ vì Back không tạo onDestroy trên máy mới.
+Muốn thấy onDestroy do cấu hình, dùng tình huống xoay màn hình D.
+
+G. SO SÁNH TRƯỚC VÀ SAU SỬA (TÙY CHỌN)
+Bản giao đã là phiên bản dùng rememberSaveable. Nếu muốn tái hiện lỗi ban đầu,
+sao chép project sang bản thử riêng, đổi các rememberSaveable thành remember
+và thêm import androidx.compose.runtime.remember. Chạy lại, bán bánh rồi
+xoay màn hình để quan sát việc mất trạng thái. Không dùng bản thử này để nộp.
+
+8. PHIẾU GHI NHẬN THỰC TẾ
+Chưa có tình huống nào dưới đây được đánh dấu là đã chạy thành công.
+Điền bằng kết quả Logcat trên máy bạn, không chép chuỗi dự kiến làm log thật.
+
+Thiết bị/máy ảo: ____________________  Android/API: _______________
+Ngày chạy: ________________________
+
+Khởi động mới:
+- Callback thực tế: ______________________________________________
+- Kết quả: _______________________________________________________
+Home và quay lại:
+- Callback thực tế: ______________________________________________
+- Dữ liệu trước/sau: _____________________________________________
+Xoay màn hình:
+- Callback thực tế: ______________________________________________
+- Số bánh, doanh thu, ảnh trước: __________________________________
+- Số bánh, doanh thu, ảnh sau: ____________________________________
+Share/đóng Share:
+- Callback thực tế: ______________________________________________
+Back:
+- Callback thực tế: ______________________________________________
+- Nhận xét theo phiên bản Android: _______________________________
+
+Ảnh minh chứng gợi ý:
+[Ảnh 1] Giao diện có tên/MSSV sau khi bán vài bánh.
+[Ảnh 2] Logcat khi khởi động.
+[Ảnh 3] Logcat khi Home/quay lại.
+[Ảnh 4] Giao diện và Logcat sau khi xoay, đối chiếu dữ liệu với ảnh 1.
+Đây là vị trí hướng dẫn chụp ảnh thật; ZIP chưa có ảnh chạy ứng dụng.
+Ảnh đề không nêu yêu cầu báo cáo Word hoặc quy tắc đặt tên file riêng.
+
+9. KIỂM TRA VÀ GIỚI HẠN
+Đã kiểm tra cấu trúc project, XML, tham chiếu tài nguyên, sự có mặt của
+7 callback và rememberSaveable, thông tin sinh viên và file ZIP.
+Môi trường tạo bài không có Android SDK/emulator nên chưa biên dịch APK,
+chạy ứng dụng hoặc thu Logcat thực tế. Cần hoàn thành mục 7–8 trên Android
+Studio trước khi nộp nếu giảng viên yêu cầu minh chứng chạy.
+
+10. NGUỒN VÀ PHẦN ĐIỀU CHỈNH
+Nền mã/tài nguyên: lời giải Dessert Clicker của Android Developers,
+Apache 2.0; giữ LICENSE và thông báo bản quyền. Bổ sung tên/MSSV,
+applicationId riêng, mô tả ảnh có thể nhấn, chú thích và hướng dẫn tiếng Việt.
+Không nhận mã mẫu chính thức là toàn bộ mã tự viết từ đầu.
+Tài liệu D8/Sample/LifeCycleDemo được dùng để đối chiếu các khái niệm trong lớp.
+
+https://developer.android.com/codelabs/basic-android-kotlin-compose-activity-lifecycle
+https://github.com/google-developer-training/basic-android-kotlin-compose-training-dessert-clicker
+https://developer.android.com/guide/components/activities/tasks-and-back-stack
