@@ -1,0 +1,9 @@
+<?xml version='1.0' encoding='utf-8'?>
+<resources>
+    <string name="dessert_app_name">Dessert Clicker</string>
+    <string name="dessert_dessert_sold">Desserts sold</string>
+    <string name="dessert_total_revenue">Total Revenue</string>
+    <string name="dessert_share">Share</string>
+    <string name="dessert_share_text">I\'ve clicked %1$d Desserts for a total of $%2$d #AndroidDessertClicker</string>
+    <string name="dessert_sharing_not_available">Sharing Not Available</string>
+</resources>
